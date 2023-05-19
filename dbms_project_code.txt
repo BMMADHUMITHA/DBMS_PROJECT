@@ -1,0 +1,298 @@
+create table CUSTOMER(cid int NOT NULL, cname varchar(255),
+	caddress varchar(255),ccity varchar(25),cstate varchar(25),czip varchar(25),
+	ccardnum varchar(255),PRIMARY KEY(cid));
+create table PRODUCT(pid int NOT NULL, pname varchar(255), pbrand
+	varchar(255), pprice DECIMAL(10,2), PRIMARY KEY(pid));
+create table SHOPPING_CART(cartid int NOT NULL, cid int, active
+	int default 1, totalprice DECIMAL(10,2), PRIMARY
+	KEY(cartid),FOREIGN KEY (cid) REFERENCES CUSTOMER(cid));
+create table CART_ITEM(iprice DECIMAL(10,2), iquantity int,cartid
+	int, pid int, price int, FOREIGN KEY (cartid)
+	REFERENCES SHOPPING_CART(cartid),FOREIGN KEY (pid) REFERENCES
+	PRODUCT(pid));
+create table ORDER_t(oid int NOT NULL, cartid int, time TIME ,
+	payprice DECIMAL(10,2), PRIMARY KEY(oid), FOREIGN KEY (cartid)REFERENCES SHOPPING_CART(cartid));
+	
+For cname in CUSTOMER table add NOT NULL CONSTRAINT:
+ALTER TABLE CUSTOMER MODIFY cname varchar(255) NOT NULL; 
+
+CARD NUMBER SHOULD BE UNIQUE:
+ALTER table CUSTOMER ADD UNIQUE (ccardnum);
+
+
+RENAME TABLE ORDER_t to ORDER_cust:
+Rename table ORDER_t to ORDER_cust;
+
+CREATE VIEW for 2nd cart_id order details:
+Create view 2nd_order_details AS select cartid,pid,iprice,iquantity from CART_ITEM where cartid=2;
+
+insert into CUSTOMER
+	(cid,cname,caddress,ccity,cstate,czip,ccardnum) values
+	(1,'aradhya','no.2532, 15th cross, BSK 2nd stage',
+	'Bangalore','karnataka','560070','984654361762354'); insert into CUSTOMER
+	(cid,cname,caddress,ccity,cstate,czip,ccardnum) values
+	(2,'Maninder','no.7655, 18th cross, Amaravathi 2nd stage',
+	'Amaravathi','Andhra Pradesh','560034','227138495696302'),
+	(3,'Naya','no.5623, 19th cross, Itanagar 2nd stage',
+	'Itanagar','Arunachal Pradesh','560054','115886170160191
+	'),(4,'Ishaan','no.8978, 13th cross, Dispur 2nd stage',
+	'Dispur','Assam','560023','693317141277093'),(5,'Jai','no.1111,
+	11th cross,Patna 2nd stage',
+	'Patna','Bihar','560012','718978106833907'),(6,'Inaya','no.2323,
+	18th cross, Raipur 2nd stage',
+	'Raipur','Chhattisgarh','560088','773897952020970'),(7,'Amar','no.
+	2532, 12th cross, Panaji 2nd stage',
+	'Panaji','Goa','560071','9942724291700247'),(8,'Navi','no.2542,
+	29th cross, Gandhi 2nd stage',
+	'Gandhinagar','Gujarat','560453','134562244867778'),(9,'aadira','n o.1987, 
+	37th cross, Chandigarh 2nd stage',
+	'Chandigarh','Haryana','560010','959417838538581'),(10,'abhi','no.
+	2352, 16th cross, Simla 2nd stage','Shimla','Himachal
+	Pradesh','560080','380884706153595'),(11,'manu','no.2222, 18th cross, Ranchi 2nd stage',
+	'Ranchi','Jharkhand','560450','141021046946817'),(12,'vinoth','no. 4343, 45th cross, 
+	Trivandrum 2nd stage','Trivandrum','Kerala','5600560','070876750973812'),
+	(13,'manjula',' no.1824, 10th cross, Bhopal 2nd stage',
+	'Bhopal','Madhya Pradesh','560270','190304788460859'),
+	(14,'dhruv','no.135, 9th cross, Mumbai 2nd stage', 'Mumbai','Maharashtra',
+	'560370','245400304669155'),(15,'kanan','no.2590, 8th cross, Imphal 2nd stage',
+	'Imphal','Manipur','562370','105599942367286'); 
+	
+select * from CUSTOMER;
+
+insert into PRODUCT (pid,pname,pbrand,pprice) values (1,'Analog Black dial ','TIMEX ',1851.50),
+	(2,'Dial coloured strap ','TIMEX',2586.50),(31,'Men’s formal shoes ','CENTRINO ',697),
+	(4,'Men5951-35 ','CENTRINO ',2299),(5,'Women’s slider ','URJO',1099.50),
+	(6,'ANGULAR HOLDER KITCHEN KNIVES ','PIGEON',695.50),(7,'GALAXY M14 5G','SAMSUNG ',14990.50),
+	(8,'NORD CE 2LITE','ONE PLUS ',18499.50),(9,'ULTRA SHEER DRYTOUCH','neutrogena',1867.50),
+	(10,'NUTRI BLEND MIXER','WONDERCHEF',2598.50);
+	
+Insert into SHOPPING_CART(cartid,cid,active) values(1,1,1),
+	(2,2,1),(3,3,0),(4,4,1),(5,5,1),(6,6,1),(7,7,1),(8,8,1),(9,9,1),(1
+	0,10,1),(11,11,1),(12,12,1),(13,13,1),(14,14,1),(15,15,0);
+
+DROP COLUMN TOTAL_PRICE:
+ALTER TABLE SHOPPING_CART DROP COLUMN totalprice;
+
+Insert into CART_ITEM(cartid,pid,iprice,iquantity) values
+	(1,2,2586.50,4),(1,4,2299,1),(1,5,1099.50,2),(2,1,2586.50,1);
+	
+UPDATE CART_ITEM set price=iprice*iquantity;
+
+select * from CART_ITEM;
+
+SELECT * FROM ORDER_cust;
+
+Display all products whose price is within 2000:
+SELECT * from PRODUCT where pprice<2000;
+
+Display the customer whose name starts with the letter ‘a’:
+SELECT * from CUSTOMER where cname like 'a%';
+
+Find the customer details who are from Bangalore:
+select * from CUSTOMER where ccity='Bangalore';
+
+Select the information of products which were ordered:
+select pname, pbrand, pprice from PRODUCT join CART_ITEM on PRODUCT.pid=CART_ITEM.pid;
+
+select pname, pbrand, pprice from PRODUCT right outer join CART_ITEM on PRODUCT.pid=CART_ITEM.pid;
+
+select pname, pbrand, pprice from PRODUCT left outer join CART_ITEM on PRODUCT.pid=CART_ITEM.pid;
+
+Average price of products:
+select AVG(pprice) from PRODUCT;
+
+Determine the OID who has amount greater than the average amount:
+select i.oid from ORDER_cust AS i where i.payprice>(SELECT AVG(i.price) FROM PRODUCT AS i);
+
+Retrieve all the details of products which have a maximum price:
+SELECT * FROM PRODUCT WHERE pprice = (SELECT MAX(pprice) FROM PRODUCT);
+
+Retrieve all details of the products whose price is greater than 
+	the average price of products in the table:
+SELECT * FROM PRODUCT WHERE PRODUCT.pprice> (SELECT AVG(pprice) FROM PRODUCT);
+
+Retrieve the count of the city of customers:
+SELECT COUNT(*),ccity FROM CUSTOMER GROUP BY ccity;
+
+SELECT(cid) FROM CUSTOMER UNION select (cartid) from SHOPPING_CART;
+SELECT(cid) FROM CUSTOMER INTERSECT select (cartid) from SHOPPING_CART;
+
+lists the products with a product price less than 5000:
+select pname FROM PRODUCT WHERE EXISTS (SELECT pid FROM CART_ITEM WHERE PRODUCT.pid=CART_ITEM.pid AND 
+	price<5000);
+
+UPDATE CUSTOMER SET dob = '1980-07-09' where cid=1;
+UPDATE CUSTOMER SET dob = '1977-07-11' where cid=2;
+UPDATE CUSTOMER SET dob = '1963-12-26' where cid=3;
+UPDATE CUSTOMER SET dob = '1971-09-18' where cid=4; 
+UPDATE CUSTOMER SET dob = '1948-08-11' where cid=5;
+UPDATE CUSTOMER SET dob = '1967-08-12' where cid=6;
+UPDATE CUSTOMER SET dob = '1980-09-30' where cid=7;
+UPDATE CUSTOMER SET dob = '1980-06-26' where cid=8;
+UPDATE CUSTOMER SET dob = '1924-08-16' where cid=9;
+UPDATE CUSTOMER SET dob = '1977-04-20' where cid=10;
+UPDATE CUSTOMER SET dob = '2002-10-07' where cid=11;
+UPDATE CUSTOMER SET dob = '1923-11-29' where cid=12;
+UPDATE CUSTOMER SET dob = '1980-11-04' where cid=13;
+UPDATE CUSTOMER SET dob = '1974-11-10' where cid=14;
+UPDATE CUSTOMER SET dob = '1992-11-08' where cid=15;
+
+Write a function to find the number of products with pid in shopping cart.
+
+DELIMITER $$
+CREATE FUNCTION no_of_products( product_id INT)
+RETURNS INT
+DETERMINISTIC
+BEGIN
+DECLARE count INT;
+SELECT COUNT(*) INTO count FROM CART_ITEM WHERE pid = product_id;
+RETURN count;
+END $$
+DELIMITER ;
+
+
+Write a stored procedure to calculate the age of the customer when the date of birth is given. 
+	Update the column named age in the customer table.
+DELIMITER $$
+CREATE PROCEDURE calculate_age_final(
+user_id INT
+)
+BEGIN
+DECLARE age INT;
+UPDATE CUSTOMER SET age = TIMESTAMPDIFF(YEAR, DOB,
+CURDATE()) WHERE user_id=cid; END $$
+DELIMITER ;
+
+call calculate_age_final(1); 
+call calculate_age_final(2); 
+call calculate_age_final(3); 
+call calculate_age_final(4); 
+call calculate_age_final(5); 
+call calculate_age_final(6); 
+call calculate_age_final(7); 
+call calculate_age_final(8); 
+call calculate_age_final(9); 
+call calculate_age_final(10); 
+call calculate_age_final(11); 
+call calculate_age_final(12); 
+call calculate_age_final(13); 
+call calculate_age_final(14); 
+call calculate_age_final(15);
+
+SELECT * from CUSTOMER;
+
+Create triggers that, when the price of a certain product changes, 
+	update the price of this item in any active shopping cart containing the item, 
+	and also updates the total price of these shopping carts?
+DELIMITER $$
+CREATE TRIGGER product_priceupdate
+AFTER UPDATE ON product
+FOR EACH ROW
+BEGIN
+UPDATE cartitem i JOIN shoppingcart c
+ON i.cartid = c.cartid
+SET i.iprice = NEW.pprice
+WHERE i.pid = NEW.pid
+AND c.active = 1;
+UPDATE shoppingcart c JOIN
+(
+SELECT cartid, SUM(iprice * iquantity) totalprice
+FROM cartitem
+WHERE cartid IN
+(
+SELECT DISTINCT i.cartid
+FROM cartitem i JOIN shoppingcart c
+ON i.cartid = c.cartid
+WHERE i.pid = NEW.pid AND c.active = 1
+) GROUP BY cartid
+) q
+ON c.cartid = q.cartid SET c.totalprice = q.totalprice;
+END$$
+DELIMITER ;
+
+CRUD OPERATIONS:
+i).
+import mysql.connector
+import streamlit as st
+import pandas as pd
+
+db = mysql.connector.connect(
+host="localhost",
+port="3307",
+user="root",
+password="Mitha@03",
+database="proj_final"
+)
+
+cursor = db.cursor()
+
+st.title("Product Details")
+
+cursor.execute("SELECT * FROM PRODUCT")
+st.dataframe(pd.DataFrame(cursor.fetchall(), columns=("pid", "pname",
+"pbrand", "pprice")))
+
+
+st.subheader("Add a new product")
+pid = st.number_input("pid",key="pid_create")
+pname = st.text_input("pname",key="pname_create")
+pbrand = st.text_input("pbrand",key="pbrand_create")
+pprice = st.number_input("pprice",key="pprice_create")
+if st.button("Add Product"):
+cursor.execute("INSERT INTO PRODUCT VALUES (%s, %s, %s, %s)", (pid, pname,
+pbrand, pprice))
+db.commit()
+st.success("product added successfully")
+st.subheader("Update a product")
+pid = st.number_input("pid",key="pid_update")
+pname = st.text_input("pname",key="pname_update")
+train_type = st.text_input("pbrand",key="pbrand_update")
+pprice = st.number_input("pprice",key="pprice_update")
+
+st.subheader("Delete a PRODUCT")
+pid = st.number_input("pid",key="pid_delete")
+if st.button("Delete PRODUCT"):
+cursor.execute("DELETE FROM PRODUCT WHERE pid = %s", (pid,))
+db.commit()
+st.success("PRODUCT deleted successfully")
+
+cursor.close()
+db.close()
+
+ii).
+import mysql.connector
+import streamlit as st
+import pandas as pd
+
+db = mysql.connector.connect(
+    host="localhost",
+    port="3307",
+    user="root",
+    password="Mitha@03",
+    database="proj_final"
+)
+
+cursor = db.cursor()
+
+st.title("CART Details")
+
+cursor.execute("SELECT * FROM shopping_cart")
+st.dataframe(pd.DataFrame(cursor.fetchall(), columns=("cartid", "cid", "active")))
+st.subheader("Update status of customer")
+cartid = st.number_input("cartid", key="cartid_update")
+active = st.number_input("active", key="active_update")
+if st.button("Update product"):
+    cursor.execute("UPDATE shopping_cart SET active = %s, WHERE cartid = %s ",
+                  (active,cartid))
+    db.commit()
+    st.success("status updated successfully")
+
+cursor.close()
+db.close()
+
+	
+
+
+
+
+
